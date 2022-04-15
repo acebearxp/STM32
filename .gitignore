@@ -1,0 +1,8 @@
+.vscode/
+build/
+
+*.code-workspace
+
+.mxproject
+*.config.yaml
+STM32Make.make

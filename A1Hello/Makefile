@@ -31,10 +31,8 @@ OPT = -Og
 # Build path
 BUILD_DIR = build
 # STM32Cube path
-ifdef STM32Cube_PATH
-STM32Cube_DIR = $(STM32Cube_PATH)
-else
-STM32Cube_DIR = C:\PROGRA~1\STMicroelectronics\STM32Cube
+ifndef STM32Cube_PATH
+STM32Cube_PATH = C:\PROGRA~1\STMicroelectronics\STM32Cube
 endif
 ######################################
 # source
@@ -44,22 +42,22 @@ C_SOURCES =  \
 Src/main.c \
 Src/stm32f4xx_it.c \
 Src/stm32f4xx_hal_msp.c \
-$(STM32Cube_DIR)/STM32Cube_FW_F4_V1.27.0/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c \
-$(STM32Cube_DIR)/STM32Cube_FW_F4_V1.27.0/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.c \
-$(STM32Cube_DIR)/STM32Cube_FW_F4_V1.27.0/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c \
-$(STM32Cube_DIR)/STM32Cube_FW_F4_V1.27.0/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c \
-$(STM32Cube_DIR)/STM32Cube_FW_F4_V1.27.0/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.c \
-$(STM32Cube_DIR)/STM32Cube_FW_F4_V1.27.0/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.c \
-$(STM32Cube_DIR)/STM32Cube_FW_F4_V1.27.0/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ex.c \
-$(STM32Cube_DIR)/STM32Cube_FW_F4_V1.27.0/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ramfunc.c \
-$(STM32Cube_DIR)/STM32Cube_FW_F4_V1.27.0/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c \
-$(STM32Cube_DIR)/STM32Cube_FW_F4_V1.27.0/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.c \
-$(STM32Cube_DIR)/STM32Cube_FW_F4_V1.27.0/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.c \
-$(STM32Cube_DIR)/STM32Cube_FW_F4_V1.27.0/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.c \
-$(STM32Cube_DIR)/STM32Cube_FW_F4_V1.27.0/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.c \
-$(STM32Cube_DIR)/STM32Cube_FW_F4_V1.27.0/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.c \
-$(STM32Cube_DIR)/STM32Cube_FW_F4_V1.27.0/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c \
-$(STM32Cube_DIR)/STM32Cube_FW_F4_V1.27.0/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_exti.c \
+$(STM32Cube_PATH)/STM32Cube_FW_F4_V1.27.0/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c \
+$(STM32Cube_PATH)/STM32Cube_FW_F4_V1.27.0/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.c \
+$(STM32Cube_PATH)/STM32Cube_FW_F4_V1.27.0/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c \
+$(STM32Cube_PATH)/STM32Cube_FW_F4_V1.27.0/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c \
+$(STM32Cube_PATH)/STM32Cube_FW_F4_V1.27.0/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.c \
+$(STM32Cube_PATH)/STM32Cube_FW_F4_V1.27.0/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.c \
+$(STM32Cube_PATH)/STM32Cube_FW_F4_V1.27.0/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ex.c \
+$(STM32Cube_PATH)/STM32Cube_FW_F4_V1.27.0/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ramfunc.c \
+$(STM32Cube_PATH)/STM32Cube_FW_F4_V1.27.0/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c \
+$(STM32Cube_PATH)/STM32Cube_FW_F4_V1.27.0/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.c \
+$(STM32Cube_PATH)/STM32Cube_FW_F4_V1.27.0/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.c \
+$(STM32Cube_PATH)/STM32Cube_FW_F4_V1.27.0/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.c \
+$(STM32Cube_PATH)/STM32Cube_FW_F4_V1.27.0/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.c \
+$(STM32Cube_PATH)/STM32Cube_FW_F4_V1.27.0/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.c \
+$(STM32Cube_PATH)/STM32Cube_FW_F4_V1.27.0/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c \
+$(STM32Cube_PATH)/STM32Cube_FW_F4_V1.27.0/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_exti.c \
 Src/system_stm32f4xx.c  
 
 # ASM sources
@@ -118,10 +116,10 @@ AS_INCLUDES =
 # C includes
 C_INCLUDES =  \
 -IInc \
--I$(STM32Cube_DIR)/STM32Cube_FW_F4_V1.27.0/Drivers/STM32F4xx_HAL_Driver/Inc \
--I$(STM32Cube_DIR)/STM32Cube_FW_F4_V1.27.0/Drivers/STM32F4xx_HAL_Driver/Inc/Legacy \
--I$(STM32Cube_DIR)/STM32Cube_FW_F4_V1.27.0/Drivers/CMSIS/Device/ST/STM32F4xx/Include \
--I$(STM32Cube_DIR)/STM32Cube_FW_F4_V1.27.0/Drivers/CMSIS/Include
+-I$(STM32Cube_PATH)/STM32Cube_FW_F4_V1.27.0/Drivers/STM32F4xx_HAL_Driver/Inc \
+-I$(STM32Cube_PATH)/STM32Cube_FW_F4_V1.27.0/Drivers/STM32F4xx_HAL_Driver/Inc/Legacy \
+-I$(STM32Cube_PATH)/STM32Cube_FW_F4_V1.27.0/Drivers/CMSIS/Device/ST/STM32F4xx/Include \
+-I$(STM32Cube_PATH)/STM32Cube_FW_F4_V1.27.0/Drivers/CMSIS/Include
 
 
 # compile gcc flags

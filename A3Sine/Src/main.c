@@ -38,15 +38,17 @@
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
 // how many steps are divided in a sine wave period
-#define SINE_STEPS  200
-#define PI  3.1415927f
+#define SINE_STEPS 200
+#define PI 3.1415927f
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
 DAC_HandleTypeDef hdac;
 DMA_HandleTypeDef hdma_dac2;
+DMA_HandleTypeDef hdma_dac1;
 
 TIM_HandleTypeDef htim6;
+TIM_HandleTypeDef htim7;
 
 UART_HandleTypeDef huart2;
 
@@ -61,6 +63,7 @@ static void MX_DMA_Init(void);
 static void MX_DAC_Init(void);
 static void MX_TIM6_Init(void);
 static void MX_USART2_UART_Init(void);
+static void MX_TIM7_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -101,20 +104,23 @@ int main(void)
     MX_DMA_Init();
     MX_DAC_Init();
     MX_TIM6_Init();
+    MX_TIM7_Init();
     MX_USART2_UART_Init();
-
     /* USER CODE BEGIN 2 */
     char buf[64] = "A3Sine: Nucleo-F446RE starting...\r\n";
-    HAL_UART_Transmit(&huart2, (uint8_t*)buf, strlen(buf), HAL_MAX_DELAY);
+    HAL_UART_Transmit(&huart2, (uint8_t *)buf, strlen(buf), HAL_MAX_DELAY);
 
     uint16_t bufSine[SINE_STEPS], value;
-    for(uint16_t i=0;i<SINE_STEPS;i++){
-        value = (uint16_t)rintf((sinf(2.0f*PI*i/SINE_STEPS) + 1.0f) * 2048.0f);
+    for (uint16_t i = 0; i < SINE_STEPS; i++)
+    {
+        value = (uint16_t)rintf((sinf(2.0f * PI * i / SINE_STEPS) * 0.8f + 1.0f) * 2048.0f);
         bufSine[i] = value < 4096 ? value : 4095;
     }
 
     HAL_TIM_Base_Start(&htim6);
-    HAL_DAC_Start_DMA(&hdac, DAC_CHANNEL_2, (uint32_t*)bufSine, SINE_STEPS, DAC_ALIGN_12B_R);
+    HAL_TIM_Base_Start(&htim7);
+    HAL_DAC_Start_DMA(&hdac, DAC_CHANNEL_2, (uint32_t *)bufSine, SINE_STEPS, DAC_ALIGN_12B_R);
+    HAL_DAC_Start_DMA(&hdac, DAC_CHANNEL_1, (uint32_t *)bufSine, SINE_STEPS, DAC_ALIGN_12B_R);
     /* USER CODE END 2 */
 
     /* Infinite loop */
@@ -209,10 +215,18 @@ static void MX_DAC_Init(void)
         Error_Handler();
     }
 
+    /** DAC channel OUT1 config
+     */
+    sConfig.DAC_Trigger = DAC_TRIGGER_T7_TRGO;
+    sConfig.DAC_OutputBuffer = DAC_OUTPUTBUFFER_ENABLE;
+    if (HAL_DAC_ConfigChannel(&hdac, &sConfig, DAC_CHANNEL_1) != HAL_OK)
+    {
+        Error_Handler();
+    }
+
     /** DAC channel OUT2 config
      */
     sConfig.DAC_Trigger = DAC_TRIGGER_T6_TRGO;
-    sConfig.DAC_OutputBuffer = DAC_OUTPUTBUFFER_ENABLE;
     if (HAL_DAC_ConfigChannel(&hdac, &sConfig, DAC_CHANNEL_2) != HAL_OK)
     {
         Error_Handler();
@@ -240,10 +254,9 @@ static void MX_TIM6_Init(void)
 
     /* USER CODE END TIM6_Init 1 */
     htim6.Instance = TIM6;
-    htim6.Init.Prescaler = 89;
+    htim6.Init.Prescaler = 89; // 90MHz -> 1MHz
     htim6.Init.CounterMode = TIM_COUNTERMODE_UP;
-    // htim6.Init.Period = 5;
-    htim6.Init.Period = 50000;
+    htim6.Init.Period = 25000; // LED2: 200/40Hz -> 5seconds
     htim6.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
     if (HAL_TIM_Base_Init(&htim6) != HAL_OK)
     {
@@ -258,6 +271,43 @@ static void MX_TIM6_Init(void)
     /* USER CODE BEGIN TIM6_Init 2 */
 
     /* USER CODE END TIM6_Init 2 */
+}
+
+/**
+ * @brief TIM7 Initialization Function
+ * @param None
+ * @retval None
+ */
+static void MX_TIM7_Init(void)
+{
+
+    /* USER CODE BEGIN TIM7_Init 0 */
+
+    /* USER CODE END TIM7_Init 0 */
+
+    TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+    /* USER CODE BEGIN TIM7_Init 1 */
+
+    /* USER CODE END TIM7_Init 1 */
+    htim7.Instance = TIM7;
+    htim7.Init.Prescaler = 8; // 90MHz -> 10MHz
+    htim7.Init.CounterMode = TIM_COUNTERMODE_UP;
+    htim7.Init.Period = 49; // 200kHz/200 -> 1kHz
+    htim7.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
+    if (HAL_TIM_Base_Init(&htim7) != HAL_OK)
+    {
+        Error_Handler();
+    }
+    sMasterConfig.MasterOutputTrigger = TIM_TRGO_UPDATE;
+    sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+    if (HAL_TIMEx_MasterConfigSynchronization(&htim7, &sMasterConfig) != HAL_OK)
+    {
+        Error_Handler();
+    }
+    /* USER CODE BEGIN TIM7_Init 2 */
+
+    /* USER CODE END TIM7_Init 2 */
 }
 
 /**
@@ -302,6 +352,9 @@ static void MX_DMA_Init(void)
     __HAL_RCC_DMA1_CLK_ENABLE();
 
     /* DMA interrupt init */
+    /* DMA1_Stream5_IRQn interrupt configuration */
+    HAL_NVIC_SetPriority(DMA1_Stream5_IRQn, 0, 0);
+    HAL_NVIC_EnableIRQ(DMA1_Stream5_IRQn);
     /* DMA1_Stream6_IRQn interrupt configuration */
     HAL_NVIC_SetPriority(DMA1_Stream6_IRQn, 0, 0);
     HAL_NVIC_EnableIRQ(DMA1_Stream6_IRQn);

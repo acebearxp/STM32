@@ -47,6 +47,9 @@ DAC_HandleTypeDef hdac;
 DMA_HandleTypeDef hdma_dac2;
 DMA_HandleTypeDef hdma_dac1;
 
+I2C_HandleTypeDef hi2c1;
+DMA_HandleTypeDef hdma_i2c1_tx;
+
 TIM_HandleTypeDef htim6;
 TIM_HandleTypeDef htim7;
 
@@ -64,6 +67,7 @@ static void MX_DAC_Init(void);
 static void MX_TIM6_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_TIM7_Init(void);
+static void MX_I2C1_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -104,11 +108,15 @@ int main(void)
     MX_DMA_Init();
     MX_DAC_Init();
     MX_TIM6_Init();
-    MX_TIM7_Init();
     MX_USART2_UART_Init();
+    MX_TIM7_Init();
+    MX_I2C1_Init();
     /* USER CODE BEGIN 2 */
     char buf[64] = "A3Sine: Nucleo-F446RE starting...\r\n";
     HAL_UART_Transmit(&huart2, (uint8_t *)buf, strlen(buf), HAL_MAX_DELAY);
+
+    HAL_I2C_Master_Transmit_DMA(&hi2c1, (ESP32S3_I2C_ADDR)<<1, (uint8_t *)buf, strlen(buf)-2);
+    // while(HAL_DMA_GetState(&hdma_i2c1_tx) == HAL_DMA_STATE_BUSY);
 
     uint16_t bufSine[SINE_STEPS], value;
     for (uint16_t i = 0; i < SINE_STEPS; i++)
@@ -237,6 +245,39 @@ static void MX_DAC_Init(void)
 }
 
 /**
+ * @brief I2C1 Initialization Function
+ * @param None
+ * @retval None
+ */
+static void MX_I2C1_Init(void)
+{
+
+    /* USER CODE BEGIN I2C1_Init 0 */
+
+    /* USER CODE END I2C1_Init 0 */
+
+    /* USER CODE BEGIN I2C1_Init 1 */
+
+    /* USER CODE END I2C1_Init 1 */
+    hi2c1.Instance = I2C1;
+    hi2c1.Init.ClockSpeed = 100000;
+    hi2c1.Init.DutyCycle = I2C_DUTYCYCLE_2;
+    hi2c1.Init.OwnAddress1 = 0;
+    hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+    hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
+    hi2c1.Init.OwnAddress2 = 0;
+    hi2c1.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
+    hi2c1.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
+    if (HAL_I2C_Init(&hi2c1) != HAL_OK)
+    {
+        Error_Handler();
+    }
+    /* USER CODE BEGIN I2C1_Init 2 */
+
+    /* USER CODE END I2C1_Init 2 */
+}
+
+/**
  * @brief TIM6 Initialization Function
  * @param None
  * @retval None
@@ -254,9 +295,9 @@ static void MX_TIM6_Init(void)
 
     /* USER CODE END TIM6_Init 1 */
     htim6.Instance = TIM6;
-    htim6.Init.Prescaler = 89; // 90MHz -> 1MHz
+    htim6.Init.Prescaler = 89;
     htim6.Init.CounterMode = TIM_COUNTERMODE_UP;
-    htim6.Init.Period = 25000; // LED2: 200/40Hz -> 5seconds
+    htim6.Init.Period = 25000;
     htim6.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
     if (HAL_TIM_Base_Init(&htim6) != HAL_OK)
     {
@@ -291,9 +332,9 @@ static void MX_TIM7_Init(void)
 
     /* USER CODE END TIM7_Init 1 */
     htim7.Instance = TIM7;
-    htim7.Init.Prescaler = 8; // 90MHz -> 10MHz
+    htim7.Init.Prescaler = 8;
     htim7.Init.CounterMode = TIM_COUNTERMODE_UP;
-    htim7.Init.Period = 49; // 200kHz/200 -> 1kHz
+    htim7.Init.Period = 49;
     htim7.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
     if (HAL_TIM_Base_Init(&htim7) != HAL_OK)
     {
@@ -358,6 +399,9 @@ static void MX_DMA_Init(void)
     /* DMA1_Stream6_IRQn interrupt configuration */
     HAL_NVIC_SetPriority(DMA1_Stream6_IRQn, 0, 0);
     HAL_NVIC_EnableIRQ(DMA1_Stream6_IRQn);
+    /* DMA1_Stream7_IRQn interrupt configuration */
+    HAL_NVIC_SetPriority(DMA1_Stream7_IRQn, 0, 0);
+    HAL_NVIC_EnableIRQ(DMA1_Stream7_IRQn);
 }
 
 /**

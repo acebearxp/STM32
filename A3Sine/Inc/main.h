@@ -70,7 +70,8 @@ extern "C"
 #define TCK_GPIO_Port GPIOA
 #define SWO_Pin GPIO_PIN_3
 #define SWO_GPIO_Port GPIOB
-    /* USER CODE BEGIN Private defines */
+/* USER CODE BEGIN Private defines */
+#define ESP32S3_I2C_ADDR 0x03
 
     /* USER CODE END Private defines */
 
